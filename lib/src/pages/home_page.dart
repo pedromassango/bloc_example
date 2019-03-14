@@ -26,27 +26,63 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final searchMargin = 80.0;
+
     return Scaffold(
-      appBar: AppBar(
-        elevation: 4,
-      ),
-      body: StreamBuilder<List<JobPositionModel>>(
-        stream: _bloc.jobs,
-        initialData: null,
-        builder: (BuildContext context, shot){
-          return !shot.hasData || shot.connectionState == ConnectionState.waiting ?
-          Center( child: CircularProgressIndicator(),)
-              : ListView.builder(
-              itemBuilder: (BuildContext context, int index){
-                return JobCard(
-                  job: shot.data.elementAt(index),
+      body: Stack(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: searchMargin),
+            child: StreamBuilder<List<JobPositionModel>>(
+              stream: _bloc.jobs,
+              initialData: null,
+              builder: (BuildContext context, shot) {
+                return !shot.hasData ||
+                    shot.connectionState == ConnectionState.waiting ?
+                Center(child: CircularProgressIndicator(),)
+                    : ListView.builder(
+                  itemCount: shot.data.length,
+                  itemBuilder: (context, index) {
+                    return JobCard(
+                      job: shot.data.elementAt(index),
+                    );
+                  },
                 );
-              }
-          );
-        },
+              },
+            ),
+          ),
+
+          Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            height: 60,
+            margin: EdgeInsets.only(top: 36, left: 12, right: 12),
+            padding: EdgeInsets.only(top: 4, left: 16, right: 16),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8
+                  )
+                ]
+            ),
+            child: TextField(
+              controller: TextEditingController(),
+              decoration: InputDecoration(
+                  hintText: 'Search',
+                  border: InputBorder.none
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
+
 }
 
 class JobCard extends StatelessWidget {
@@ -68,7 +104,7 @@ class JobCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
-                blurRadius: 3
+                  blurRadius: 1
               )
             ]
           ),
@@ -139,7 +175,7 @@ class JobCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 2
+              blurRadius: 1
           )
         ]
       ),
