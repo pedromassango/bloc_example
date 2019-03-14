@@ -1,6 +1,6 @@
 # flutter_bloc_example
 
-A new Flutter project using BLoC pattern
+A new Flutter project using BLoC pattern and fetching data from Github jobs API.
 
 ## Getting Started
 
