@@ -60,7 +60,8 @@ class JobCard extends StatelessWidget {
         Container(
           height: 200,
           width: double.maxFinite,
-          margin: EdgeInsets.all(24),
+          margin: EdgeInsets.fromLTRB(14, 18, 12, 16),
+          padding: EdgeInsets.fromLTRB(16, 85, 16, 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -71,26 +72,56 @@ class JobCard extends StatelessWidget {
               )
             ]
           ),
-        ),
-        Container(
-          height: 200,
-          width: double.maxFinite,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+
               Row(
                 children: <Widget>[
-                  _buildIcon(),
-                  Text(job.title, style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  Icon(Icons.card_travel, color: Colors.blueGrey,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(job.company),
                   ),
                 ],
               ),
-              Text(job.company),
-              Text(job.location),
-              Text(job.type),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.place, color: Colors.blueGrey,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(job.location),
+                  ),
+                ],
+              ),
+              Spacer(),
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(job.type, style: TextStyle(
+                        color: job.type.contains("Full") ? Colors.green : Colors
+                            .red
+                    ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            _buildIcon(),
+            Text(job.title, style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            ),
+            Spacer(),
+          ],
         ),
       ],
     );
@@ -101,7 +132,7 @@ class JobCard extends StatelessWidget {
       width: 85,
       height: 85,
       padding: EdgeInsets.all(8),
-      margin: EdgeInsets.only(left: 12, top: 16, right:  16),
+      margin: EdgeInsets.only(left: 6, top: 0, right: 16),
       decoration: BoxDecoration(
         color: Colors.white,
           shape: BoxShape.circle,
