@@ -12,7 +12,7 @@ class HomePageStateDefault extends HomePageState {
   String toString() => 'HomePageStateDefault';
 }
 
-class HomePageStateLoading extends HomePageState {
+class HomePageStateSearching extends HomePageState {
   @override
   String toString() => 'HomePageStateLoading';
 }
@@ -26,10 +26,10 @@ class HomePageStateError extends HomePageState {
   String toString() => 'HomePageStateError';
 }
 
-class HomePageStateLoaded extends HomePageState {
+class HomePageStateSearched extends HomePageState {
   final List<JobPositionModel> data;
 
-  HomePageStateLoaded({this.data});
+  HomePageStateSearched({this.data});
 
   @override
   String toString() => 'HomePageStateLoaded';
