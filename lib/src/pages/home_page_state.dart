@@ -1,3 +1,4 @@
+import 'package:flutter_bloc_example/src/models.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -26,7 +27,7 @@ class HomePageStateError extends HomePageState {
 }
 
 class HomePageStateLoaded extends HomePageState {
-  final dynamic data;
+  final List<JobPositionModel> data;
 
   HomePageStateLoaded({this.data});
 
