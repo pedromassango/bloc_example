@@ -16,6 +16,8 @@ class _HomePageState extends State<HomePage> {
   HomePageBloc _homeBloc;
   TextEditingController _positionController;
 
+  double _searchElevation = 1;
+
   @override
   void initState() {
     _positionController = TextEditingController();
@@ -58,6 +60,7 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if (state is HomePageStateSearching) {
+                    _searchElevation = 0; // reset search bar's elevation
                     return Center(child: CircularProgressIndicator());
                   }
 
@@ -77,20 +80,35 @@ class _HomePageState extends State<HomePage> {
                       return Center(child: Text('No Results!'),);
                     }
 
-                    return ListView.builder(
-                      itemCount: state.data.length,
-                      itemBuilder: (context, index) {
-                        return JobCard(
-                          job: state.data.elementAt(index),
-                        );
+                    return NotificationListener(
+                      onNotification: (t) {
+                        if (t is ScrollUpdateNotification) {
+                          print('Delta: ${t.scrollDelta}');
+                          if (t.scrollDelta < 0.0 && _searchElevation != 0) {
+                            setState(() => _searchElevation = 0);
+                          } else
+                          if (t.scrollDelta > 0.0 && _searchElevation != 8) {
+                            setState(() => _searchElevation = 30);
+                          }
+                        }
                       },
+                      child: ListView.builder(
+                        itemCount: state.data.length,
+                        itemBuilder: (context, index) {
+                          return JobCard(
+                            job: state.data.elementAt(index),
+                          );
+                        },
+                      ),
                     );
                   }
                 },
               ),
             ),
 
-            Container(
+            AnimatedContainer(
+              curve: Curves.fastOutSlowIn,
+              duration: Duration(milliseconds: 800),
               width: MediaQuery
                   .of(context)
                   .size
@@ -103,8 +121,8 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.all(Radius.circular(16)),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8
+                        color: Colors.black26,
+                        blurRadius: _searchElevation
                     )
                   ]
               ),
@@ -137,7 +155,8 @@ class JobCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Container(
+        AnimatedContainer(
+          duration: Duration(milliseconds: 1000),
           height: 200,
           width: double.maxFinite,
           margin: EdgeInsets.fromLTRB(14, 18, 12, 16),
@@ -198,9 +217,13 @@ class JobCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               _buildIcon(),
-              Text(job.title, style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              Flexible(
+                flex: 5,
+                fit: FlexFit.tight,
+                child: Text(job.title, style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                ),
               ),
               Spacer(),
             ],
