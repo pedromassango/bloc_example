@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc_example/src/home_page_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc_example/src/git_repository.dart';
+import 'package:flutter_bloc_example/src/pages/home_page_bloc.dart';
 import 'package:flutter_bloc_example/src/models.dart';
+import 'package:flutter_bloc_example/src/pages/home_page_events.dart';
+import 'package:flutter_bloc_example/src/pages/home_page_state.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,18 +13,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  HomePageBloc _bloc = HomePageBloc();
+  HomePageBloc _homeBloc;
+  TextEditingController _positionController;
 
   @override
   void initState() {
-    super.initState();
+    _positionController = TextEditingController();
 
-    _bloc.searchJobs('python', 'new york');
+    _homeBloc = HomePageBloc(
+        gitRepository: GitRepository()
+    );
+
+    super.initState();
   }
 
   @override
   void dispose() {
-    _bloc.dispose();
+    _homeBloc.dispose();
     super.dispose();
   }
 
@@ -28,57 +37,92 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final searchMargin = 80.0;
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: searchMargin),
-            child: StreamBuilder<List<JobPositionModel>>(
-              stream: _bloc.jobs,
-              initialData: null,
-              builder: (BuildContext context, shot) {
-                return !shot.hasData ||
-                    shot.connectionState == ConnectionState.waiting ?
-                Center(child: CircularProgressIndicator(),)
-                    : ListView.builder(
-                  itemCount: shot.data.length,
-                  itemBuilder: (context, index) {
-                    return JobCard(
-                      job: shot.data.elementAt(index),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
+    return BlocProvider<HomePageBloc>(
+      bloc: _homeBloc,
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: searchMargin),
+              child: BlocBuilder<HomePageEvent, HomePageState>(
+                bloc: _homeBloc,
+                builder: (BuildContext context, HomePageState state) {
+                  if (state is HomePageStateDefault) {
+                    return Center(
+                      child: Text('Start Searching for a Job\nRight now!',
+                        textAlign: TextAlign.center, style: TextStyle(
+                            fontSize: 24,
+                            color: Colors.blueGrey
+                        ),)
+                      ,);
+                  }
 
-          Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            height: 60,
-            margin: EdgeInsets.only(top: 36, left: 12, right: 12),
-            padding: EdgeInsets.only(top: 4, left: 16, right: 16),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8
-                  )
-                ]
-            ),
-            child: TextField(
-              controller: TextEditingController(),
-              decoration: InputDecoration(
-                  hintText: 'Search',
-                  border: InputBorder.none
+                  if (state is HomePageStateSearching) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is HomePageStateError) {
+                    return Center(
+                      child: Text('Conection Error!',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 24
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (state is HomePageStateSearched) {
+                    if (state.data.length == 0) {
+                      return Center(child: Text('No Results!'),);
+                    }
+
+                    return ListView.builder(
+                      itemCount: state.data.length,
+                      itemBuilder: (context, index) {
+                        return JobCard(
+                          job: state.data.elementAt(index),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
             ),
-          )
-        ],
+
+            Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: 60,
+              margin: EdgeInsets.only(top: 36, left: 12, right: 12),
+              padding: EdgeInsets.only(top: 4, left: 16, right: 16),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8
+                    )
+                  ]
+              ),
+              child: TextField(
+                onSubmitted: (query) {
+                  var position = _positionController.text;
+                  _homeBloc.dispatch(
+                      HomePageEventSearch(jobPosition: position));
+                },
+                controller: _positionController,
+                decoration: InputDecoration(
+                    hintText: 'Search',
+                    border: InputBorder.none
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -147,17 +191,20 @@ class JobCard extends StatelessWidget {
             ],
           ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            _buildIcon(),
-            Text(job.title, style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-            ),
-            Spacer(),
-          ],
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _buildIcon(),
+              Text(job.title, style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              ),
+              Spacer(),
+            ],
+          ),
         ),
       ],
     );
