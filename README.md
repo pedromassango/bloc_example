@@ -2,6 +2,19 @@
 
 A new Flutter project using BLoC pattern and fetching data from Github jobs API.
 
+## Used Packages
+
+- [x] bloc
+- [x] flutter_bloc
+- [x] rxdart
+- [x] http
+- [x] equatable
+- [x] meta
+
+## Screenshots
+
+<img src="/screenshots/img1.png" width="260" height="480"> <img src="/screenshots/img2.png" width="260" height="480"> <img src="/screenshots/img3.png" width="260" height="480">
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
