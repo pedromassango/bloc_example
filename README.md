@@ -13,7 +13,7 @@ A new Flutter project using BLoC pattern and fetching data from Github jobs API.
 
 ## Screenshots
 
-<img src="/screenshots/img1.png" width="260" height="480"> <img src="/screenshots/img2.png" width="260" height="480"> <img src="/screenshots/img3.png" width="260" height="480">
+<img src="/screenshots/im1.png" width="260" height="480"> <img src="/screenshots/im2.png" width="260" height="480"> <img src="/screenshots/im3.png" width="260" height="480">
 
 ## Getting Started
 
