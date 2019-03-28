@@ -6,7 +6,7 @@ A new Flutter project using BLoC pattern and fetching data from Github jobs API.
 
 - [x] bloc
 - [x] flutter_bloc
-- [x] rxdart
+- [ ] rxdart
 - [x] http
 - [x] equatable
 - [x] meta
